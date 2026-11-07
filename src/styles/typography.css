@@ -93,6 +93,6 @@ h1,h2,h3,h4{font-family:var(--display);font-optical-sizing:auto}
 #root>footer{margin-top:auto}
 
 /* text selection: readable in both themes (the old light-mode rule inherited white text) */
-::selection{background:rgba(255,106,43,.42);color:#fff}
-html[data-theme="light"] ::selection,html[data-theme="light"]::selection{background:rgba(255,106,43,.3);color:#14151a}
-html[data-theme="light"] #show .stick ::selection{background:rgba(255,106,43,.5);color:#fff}
+::selection{background:rgba(52,211,153,.42);color:#fff}
+html[data-theme="light"] ::selection,html[data-theme="light"]::selection{background:rgba(52,211,153,.3);color:#14151a}
+html[data-theme="light"] #show .stick ::selection{background:rgba(52,211,153,.5);color:#fff}

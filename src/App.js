@@ -4,8 +4,10 @@ import './styles/pages.css';
 import './styles/extras.css';
 import './styles/polish.css';
 import './styles/typography.css';
+import 'lenis/dist/lenis.css';
 
 import useTheme from './hooks/useTheme';
+import useLenis from './hooks/useLenis';
 import useSiteEngines from './hooks/useSiteEngines';
 import useScrollReveal from './hooks/useScrollReveal';
 import DeptTransition from './components/layout/DeptTransition';
@@ -34,6 +36,7 @@ import Footer from './components/layout/Footer';
 
 export default function App() {
   const [light, toggleTheme] = useTheme();
+  useLenis();
   useSiteEngines();
   useScrollReveal();
   return (

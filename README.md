@@ -10,7 +10,7 @@ Official website of the **Unmanned Ground Vehicle Tech Team at Delhi Technologic
 
 - React 18 (Create React App)
 - React Router v6
-- Framer Motion, GSAP
+- Framer Motion, GSAP, Lenis (smooth scrolling)
 - Three.js (3D model viewer)
 - React Markdown (blog rendering)
 
