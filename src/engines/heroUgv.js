@@ -14,8 +14,8 @@ S.add(new T.AmbientLight(0xffffff,.6));
 const kl=new T.DirectionalLight(0xffffff,1.1);kl.position.set(4,8,5);S.add(kl);
 const rl=new T.DirectionalLight(0x7c9cff,.55);rl.position.set(-6,3,-5);S.add(rl);
 const mat=(c,r,m,e)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m,emissive:e||0});
-const mB=mat(0x2c323c,.45,.6),mA=mat(0xb9bcc0,.35,.75),mT=mat(0x15171b,.9,.1),mO=mat(0xff6a2b,.4,.3,0x401200),mH=new T.MeshBasicMaterial({color:0xfff0c2});
-const ed=new T.LineBasicMaterial({color:0xff7a3c,transparent:true,opacity:.5});
+const mB=mat(0x2c323c,.45,.6),mA=mat(0xb9bcc0,.35,.75),mT=mat(0x15171b,.9,.1),mAccent=mat(0x38bdf8,.4,.3,0x062b45),mH=new T.MeshBasicMaterial({color:0xe5f4ff});
+const ed=new T.LineBasicMaterial({color:0x60caff,transparent:true,opacity:.5});
 const car=new T.Group();S.add(car);const parts=[];
 const bx=(w,h,d)=>new T.BoxGeometry(w,h,d),cy=(r,h,s)=>new T.CylinderGeometry(r,r,h,s||24);
 function add(p,geo,x,y,z,m,o){o=o||{};const g=new T.Group(),me=new T.Mesh(geo,m);g.position.set(x,y,z);if(o.rz)me.rotation.z=o.rz;g.add(me);
@@ -26,38 +26,38 @@ add(car,bx(1.5,.36,2.4),0,.68,0,mB,{x:[0,-.5,0]});
 [-1,1].forEach(s=>{add(car,bx(.06,.06,2.5),s*.72,.93,0,mA,{x:[s*.3,.35,0]});add(car,bx(1.5,.06,.06),0,.93,s*1.1,mA,{x:[0,.35,s*.3]})});
 add(car,bx(1.36,.05,2.12),0,.99,0,mA,{x:[0,.7,0]});
 // electronics enclosure + accent, bumper, headlights
-add(car,bx(.95,.42,.9),0,1.23,-.2,mB,{x:[0,1.3,0]});add(car,bx(.97,.07,.92),0,1.46,-.2,mO,{x:[0,1.55,0]});
-add(car,bx(1.3,.16,.1),0,.62,1.27,mO,{x:[0,0,.7]});
+add(car,bx(.95,.42,.9),0,1.23,-.2,mB,{x:[0,1.3,0]});add(car,bx(.97,.07,.92),0,1.46,-.2,mAccent,{x:[0,1.55,0]});
+add(car,bx(1.3,.16,.1),0,.62,1.27,mAccent,{x:[0,0,.7]});
 [-.45,.45].forEach(x=>add(car,bx(.3,.08,.04),x,.8,1.22,mH,{n:1,x:[0,0,.7]}));
 // LiDAR on a mast (head spins)
 add(car,cy(.035,1.4,10),0,1.7,-.8,mA,{n:1,x:[0,1.9,0]});
-const lidar=add(car,cy(.2,.2,28),0,2.5,-.8,mB,{x:[0,2.4,0]}),lHead=add(lidar,cy(.15,.09,24),0,.14,0,mA,{n:1});add(lHead,bx(.12,.05,.05),.17,0,0,mO,{n:1});
+const lidar=add(car,cy(.2,.2,28),0,2.5,-.8,mB,{x:[0,2.4,0]}),lHead=add(lidar,cy(.15,.09,24),0,.14,0,mA,{n:1});add(lHead,bx(.12,.05,.05),.17,0,0,mAccent,{n:1});
 // depth camera on a front mast
 add(car,cy(.025,.8,8),0,1.4,.85,mA,{n:1,x:[0,1.2,.5]});
-const cam=add(car,bx(.55,.1,.12),0,1.85,.85,mB,{x:[0,1.4,.6]});[-.18,.18].forEach(x=>add(cam,bx(.07,.05,.02),x,0,.07,mO,{n:1}));
+const cam=add(car,bx(.55,.1,.12),0,1.85,.85,mB,{x:[0,1.4,.6]});[-.18,.18].forEach(x=>add(cam,bx(.07,.05,.02),x,0,.07,mAccent,{n:1}));
 // RTK GPS puck + LoRa e-stop antenna
 const gps=add(car,cy(.14,.07,24),-.5,1.07,-.85,mA,{x:[-.6,1.1,0]});
 add(car,cy(.05,.1,12),.55,1.05,-.85,mB,{n:1,x:[.6,.7,0]});const ant=add(car,cy(.012,.9,8),.55,1.5,-.85,mA,{n:1,x:[.6,1.2,0]});
 // wheels with tread lugs
 const wheels=[];[[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([sx,sz])=>{const w=new T.Group();w.position.set(sx*.95,.42,sz*.85);
- add(w,cy(.42,.3,28),0,0,0,mT,{rz:Math.PI/2});add(w,cy(.27,.32,24),0,0,0,mB,{rz:Math.PI/2});add(w,cy(.1,.36,16),0,0,0,mO,{rz:Math.PI/2,n:1});
+ add(w,cy(.42,.3,28),0,0,0,mT,{rz:Math.PI/2});add(w,cy(.27,.32,24),0,0,0,mB,{rz:Math.PI/2});add(w,cy(.1,.36,16),0,0,0,mAccent,{rz:Math.PI/2,n:1});
  for(let i=0;i<14;i++){const a=i/14*6.2832;add(w,bx(.3,.07,.13),0,Math.cos(a)*.44,Math.sin(a)*.44,mT,{n:1}).rotation.x=a}
  w.userData.b=w.position.clone();w.userData.d=new T.Vector3(sx*1.3,0,sz*.5);parts.push(w);car.add(w);wheels.push(w)});
 // ground: grid (recoloured per theme) + platform ring
 const gnd=new T.Group();S.add(gnd);const grid=new T.GridHelper(14,28);gnd.add(grid);
-function mkGrid(light){const colors=grid.geometry.attributes.color,primary=new T.Color(light?0xd9480f:0xff6a2b),secondary=new T.Color(light?0x9aa3b5:0x2b323d);for(let i=0;i<=28;i++){const color=i===14?primary:secondary;for(let j=i*4;j<i*4+4;j++)colors.setXYZ(j,color.r,color.g,color.b)}colors.needsUpdate=true;grid.material.transparent=true;grid.material.opacity=light?.75:.85}
-mkGrid(document.documentElement.getAttribute('data-theme')==='light');
-new MutationObserver(()=>mkGrid(document.documentElement.getAttribute('data-theme')==='light')).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-const plat=new T.Mesh(new T.RingGeometry(2.55,2.58,96),new T.MeshBasicMaterial({color:0xff6a2b,transparent:true,opacity:.55,side:T.DoubleSide}));plat.rotation.x=-Math.PI/2;plat.position.y=.01;S.add(plat);
+function applyTheme(){const light=document.documentElement.getAttribute('data-theme')==='light',accent=light?0x1479a5:0x38bdf8,bright=light?0x1479a5:0x60caff,colors=grid.geometry.attributes.color,primary=new T.Color(accent),secondary=new T.Color(light?0x9aa3b5:0x2b323d);scanBase.copy(primary).multiplyScalar(.65);scanGlow.setHex(bright);for(let i=0;i<=28;i++){const color=i===14?primary:secondary;for(let j=i*4;j<i*4+4;j++)colors.setXYZ(j,color.r,color.g,color.b)}colors.needsUpdate=true;grid.material.transparent=true;grid.material.opacity=light?.75:.85;mAccent.color.setHex(accent);mAccent.emissive.setHex(light?0x062b45:0x062b45);ed.color.setHex(bright);plat.material.color.setHex(accent);rings.forEach(r=>r.material.color.setHex(accent));beam.material.color.setHex(bright);for(let i=0;i<NP;i++){const j=i*3,k=lit[i];pc[j]=scanBase.r+(scanGlow.r-scanBase.r)*k;pc[j+1]=scanBase.g+(scanGlow.g-scanBase.g)*k;pc[j+2]=scanBase.b+(scanGlow.b-scanBase.b)*k}pg.attributes.color.needsUpdate=true}
+const plat=new T.Mesh(new T.RingGeometry(2.55,2.58,96),new T.MeshBasicMaterial({color:0x38bdf8,transparent:true,opacity:.55,side:T.DoubleSide}));plat.rotation.x=-Math.PI/2;plat.position.y=.01;S.add(plat);
 // lidar scan: point cloud that lights up as range rings pass + sweeping laser
 const scanG=new T.Group();S.add(scanG);
-const NP=700,pp=new Float32Array(NP*3),pc=new Float32Array(NP*3),lit=new Float32Array(NP);
+const NP=700,pp=new Float32Array(NP*3),pc=new Float32Array(NP*3),lit=new Float32Array(NP),scanBase=new T.Color(),scanGlow=new T.Color();
 for(let i=0;i<NP;i++){const a=Math.random()*6.283,r=1.9+Math.sqrt(Math.random())*3.6;pp.set([Math.cos(a)*r,Math.random()<.1?Math.random()*.7:.03,Math.sin(a)*r],i*3)}
 const pg=new T.BufferGeometry();pg.setAttribute('position',new T.BufferAttribute(pp,3));pg.setAttribute('color',new T.BufferAttribute(pc,3));
 scanG.add(new T.Points(pg,new T.PointsMaterial({size:.075,vertexColors:true,transparent:true,opacity:.95,depthWrite:false})));
-const rings=[0,.5].map(()=>{const m=new T.Mesh(new T.RingGeometry(.985,1,96),new T.MeshBasicMaterial({color:0xff6a2b,transparent:true,side:T.DoubleSide,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=.03;scanG.add(m);return m});
+const rings=[0,.5].map(()=>{const m=new T.Mesh(new T.RingGeometry(.985,1,96),new T.MeshBasicMaterial({color:0x38bdf8,transparent:true,side:T.DoubleSide,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=.03;scanG.add(m);return m});
 const bg=new T.BufferGeometry();bg.setAttribute('position',new T.BufferAttribute(new Float32Array(6),3));
-const beam=new T.Line(bg,new T.LineBasicMaterial({color:0xff8a55,transparent:true,opacity:.85}));beam.frustumCulled=false;scanG.add(beam);
+const beam=new T.Line(bg,new T.LineBasicMaterial({color:0x60caff,transparent:true,opacity:.85}));beam.frustumCulled=false;scanG.add(beam);
+applyTheme();
+new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 // inspect tags
 const TG=[['LiDAR',lidar,[0,.22,0]],['Depth camera',cam,[0,.08,.08]],['RTK GPS',gps,[0,.06,0]],['LoRa e-stop',ant,[0,.45,0]]].map(([n,o,off])=>{
  const b=document.createElement('button');b.type='button';b.className='ugv-tag';b.innerHTML='<i></i>'+n;tagBox.appendChild(b);return {n,o,off:new T.Vector3(...off),b,s:1,w:0}});
@@ -95,7 +95,7 @@ function frame(ms){raf=0;if(!vis)return;const dt=Math.min(.05,(ms-last)/1000||.0
   const dz=spd*.42*dt;
   for(let i=0;i<NP;i++){const j=i*3;pp[j+2]-=dz;let x=pp[j],z=pp[j+2];const lim=Math.sqrt(Math.max(.5,31-x*x));if(z<-lim)pp[j+2]=z=lim;
    const r=Math.hypot(x,z);if(Math.abs(r-r0)<.14||Math.abs(r-r1)<.14)lit[i]=1;lit[i]=Math.max(0,lit[i]-dt*.7);const k=lit[i];
-   pc[j]=.45+.55*k;pc[j+1]=.5-.08*k;pc[j+2]=.62-.45*k}
+   pc[j]=scanBase.r+(scanGlow.r-scanBase.r)*k;pc[j+1]=scanBase.g+(scanGlow.g-scanBase.g)*k;pc[j+2]=scanBase.b+(scanGlow.b-scanBase.b)*k}
   pg.attributes.position.needsUpdate=true;pg.attributes.color.needsUpdate=true;
   const a=t*2.2,bp=bg.attributes.position;lidar.getWorldPosition(V);bp.setXYZ(0,V.x,V.y,V.z);bp.setXYZ(1,Math.cos(a)*4.2,.02,Math.sin(a)*4.2);bp.needsUpdate=true}
  TG.forEach(g=>{const s=g.h||g===focus?1.14:1;g.s+=(s-g.s)*(1-Math.exp(-dt*10));g.o.scale.setScalar(g.s)});

@@ -5,7 +5,7 @@ export default function research() {
   window.__eng_research = 1;
 (function(){
 const cards=[...document.querySelectorAll('.rs-card')];if(!cards.length)return;
-const still=matchMedia('(prefers-reduced-motion:reduce)').matches,AC='#ff6a2b',FG='rgba(241,243,248,.6)',DIM='rgba(241,243,248,.18)';
+const still=matchMedia('(prefers-reduced-motion:reduce)').matches,AC='#38bdf8',FG='rgba(241,243,248,.6)',DIM='rgba(241,243,248,.18)';
 const dot=(c,x,y,r,f)=>{c.fillStyle=f;c.beginPath();c.arc(x,y,r,0,7);c.fill()};
 let sd=7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
 const scenes=[
