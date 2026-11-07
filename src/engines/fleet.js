@@ -7,7 +7,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const activeModelCleanups=new Set();
 const MAX_OUTLINE_INDICES=60000;
-const CAD_BASE_COLOR=0x999999;
+const cadBaseColor=compact=>compact&&document.documentElement.getAttribute('data-theme')==='light'?0x6d4ac7:0x9582b7;
 
 export function disposeBotModel(){
   activeModelCleanups.forEach(cleanup=>cleanup());
@@ -19,11 +19,12 @@ function showBotModel(container,botName,{compact=false}={}){
   container.dataset.modelState='loading';
   container.innerHTML=`<div class="model-status" role="status">Loading ${botName} CAD model…</div>`;
 
-  let renderer,controls,frame,resizeObserver,disposed=false,model,rotationPivot,grid,cleanup;
+  let renderer,controls,frame,resizeObserver,themeObserver,disposed=false,model,rotationPivot,grid,cleanup;
 
   const sourceMaterials=new Set();
+  const modelMaterials=new Set();
   const scene=new THREE.Scene();
-  if(!compact)scene.background=new THREE.Color(0x171112);
+  if(!compact)scene.background=new THREE.Color(0x07121f);
   const camera=new THREE.PerspectiveCamera(35,1,.1,100);
   const cameraHeight=botName==='Valkyrie'?(compact ? 2.5 : 3.2):(compact ? 0.65 : 1.1);
   camera.position.set(0,cameraHeight,compact ? 4.8 : 4.6);
@@ -36,18 +37,19 @@ function showBotModel(container,botName,{compact=false}={}){
   fill.position.set(-4,2,-3);
   scene.add(fill);
   if(!compact){
-    grid=new THREE.GridHelper(14,28,0xff713b,0x263442);
+    grid=new THREE.GridHelper(14,28,0xa78bfa,0x263442);
     grid.position.y=-1.2;
     scene.add(grid);
   }
   const outlines=[];
-  const outlineMaterial=new THREE.LineBasicMaterial({color:0x9aa3ad,transparent:true,opacity:.8,depthWrite:false});
+  const outlineMaterial=new THREE.LineBasicMaterial({color:0xc4b5fd,transparent:true,opacity:.8,depthWrite:false});
 
   cleanup=()=>{
     if(disposed)return;
     disposed=true;
     cancelAnimationFrame(frame);
     resizeObserver?.disconnect();
+    themeObserver?.disconnect();
     controls?.dispose();
     renderer?.dispose();
     renderer?.forceContextLoss();
@@ -69,11 +71,16 @@ function showBotModel(container,botName,{compact=false}={}){
     activeModelCleanups.delete(cleanup);
   };
   activeModelCleanups.add(cleanup);
+  themeObserver=new MutationObserver(()=>{
+    modelMaterials.forEach(material=>material.color?.setHex(cadBaseColor(compact)));
+    outlineMaterial.color.setHex(compact&&document.documentElement.getAttribute('data-theme')==='light'?0x6d4ac7:0xc4b5fd);
+  });
+  themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
   try{
     renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
-    renderer.setClearColor(0x171112,compact?0:1);
+    renderer.setClearColor(0x07121f,compact?0:1);
     renderer.toneMapping=THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure=.85;
     renderer.domElement.setAttribute('aria-label',`Interactive 3D model of ${botName}`);
@@ -150,7 +157,7 @@ function showBotModel(container,botName,{compact=false}={}){
               sourceMaterials.add(material);
               const shaded=material.clone();
               shaded.vertexColors=false;
-              if(shaded.color)shaded.color.setHex(CAD_BASE_COLOR);
+              if(shaded.color){shaded.color.setHex(cadBaseColor(compact));modelMaterials.add(shaded)}
               if('map' in shaded)shaded.map=null;
               if(shaded.emissive)shaded.emissive.set(0x000000);
               if('metalness' in shaded)shaded.metalness=.75;

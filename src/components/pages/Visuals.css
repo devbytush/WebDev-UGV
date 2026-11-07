@@ -17,7 +17,7 @@
 .vs-nav:active{transform:scale(.92)}
 .vs-play{top:14px;right:14px;width:34px;height:34px;font-size:10px}
 .vs-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.14)}
-.vs-bar i{display:block;height:100%;width:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--acc),var(--acc2,#ffb15c));animation:vsBar linear forwards}
+.vs-bar i{display:block;height:100%;width:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--acc),var(--acc2,#ddd6fe));animation:vsBar linear forwards}
 @keyframes vsBar{to{transform:scaleX(1)}}
 .vs-strip{display:flex;gap:10px;margin-top:12px;padding:4px 2px 8px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
 .vs-strip::-webkit-scrollbar{display:none}

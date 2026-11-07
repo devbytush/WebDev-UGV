@@ -15,12 +15,12 @@ const pp=[];for(let i=0;i<=16;i++)pp.push(new T.Vector3(Math.sin(i*.9)*15+Math.s
 const path=new T.CatmullRomCurve3(pp),LEN=path.getLength(),sp=path.getSpacedPoints(180);
 // terrain: lidar point cloud + scan lines, with a flat corridor along the path
 const noise=(x,z)=>Math.sin(x*.21)*Math.cos(z*.17)*2.4+Math.sin(x*.07+z*.11)*4.8+Math.sin(x*.55+z*.4)*.4;
-const GX=150,GZ=320,X0=-75,Z0=-250,pos=new Float32Array((GX+1)*(GZ+1)*3),col=new Float32Array(pos.length);
-const lo=new T.Color(0x6a7894),hi=new T.Color(0xff6a2b),c=new T.Color();let k=0;
+const GX=150,GZ=320,X0=-75,Z0=-250,pos=new Float32Array((GX+1)*(GZ+1)*3),col=new Float32Array(pos.length),blend=new Float32Array(pos.length/3);
+const lo=new T.Color(0x493c70),hi=new T.Color(0xa78bfa),c=new T.Color(),terrainColor=new T.Color();let k=0;
 for(let iz=0;iz<=GZ;iz++)for(let ix=0;ix<=GX;ix++){const x=X0+ix,z=Z0+iz;let d=1e9;
  for(let j=0;j<sp.length;j+=2){const dx=x-sp[j].x,dz=z-sp[j].z,q=dx*dx+dz*dz;if(q<d)d=q}
- d=Math.sqrt(d);const h=noise(x,z)*sm(3,17,d)+(d<3?Math.sin(x*3+z*2)*.04:0);
- pos[k]=x;pos[k+1]=h;pos[k+2]=z;c.copy(lo).lerp(hi,clamp(h/5,0,1)*.9+(d<3.4&&d>2.6?.5:0));col[k]=c.r;col[k+1]=c.g;col[k+2]=c.b;k+=3}
+ d=Math.sqrt(d);const h=noise(x,z)*sm(3,17,d)+(d<3?Math.sin(x*3+z*2)*.04:0),mix=clamp(h/5,0,1)*.9+(d<3.4&&d>2.6?.5:0);
+ pos[k]=x;pos[k+1]=h;pos[k+2]=z;blend[k/3]=mix;c.copy(lo).lerp(hi,mix);col[k]=c.r;col[k+1]=c.g;col[k+2]=c.b;k+=3}
 const pg=new T.BufferGeometry();pg.setAttribute('position',new T.BufferAttribute(pos,3));pg.setAttribute('color',new T.BufferAttribute(col,3));
 sc.add(new T.Points(pg,new T.PointsMaterial({size:.16,vertexColors:true,transparent:true,opacity:.95})));
 const lm=new T.LineBasicMaterial({color:0x3a4558,transparent:true,opacity:.75});
@@ -29,7 +29,7 @@ for(let iz=0;iz<=GZ;iz+=8){const a=new Float32Array((GX+1)*3);for(let ix=0;ix<=G
 // light
 sc.add(new T.AmbientLight(0xffffff,.5));const dl=new T.DirectionalLight(0xffffff,.9);dl.position.set(6,10,4);sc.add(dl);
 // cones along the lane edges
-const cm=new T.MeshStandardMaterial({color:0xff6a2b,emissive:0x3a1000,roughness:.5});
+const cm=new T.MeshStandardMaterial({color:0xa78bfa,emissive:0x200e45,roughness:.5});
 for(let i=6;i<sp.length-4;i+=7){const a=sp[i],b=sp[i+1],nx=-(b.z-a.z),nz=(b.x-a.x),l=Math.hypot(nx,nz),s=(i/7)%2?1:-1;
  const m=new T.Mesh(new T.ConeGeometry(.3,.75,10),cm);m.position.set(a.x+nx/l*s*3.4,.38,a.z+nz/l*s*3.4);sc.add(m)}
 // waypoint gates
@@ -38,19 +38,19 @@ const gm=new T.MeshBasicMaterial({color:0xcfd8e8,transparent:true,opacity:.5});
  [[-3.4,2],[3.4,2]].forEach(([x,y])=>{const m=new T.Mesh(new T.BoxGeometry(.12,4,.12),gm);m.position.set(x,y,0);g.add(m)});
  const bar=new T.Mesh(new T.BoxGeometry(6.9,.12,.12),gm);bar.position.y=4;g.add(bar);g.position.copy(p);g.rotation.y=Math.atan2(-t.x,-t.z);sc.add(g)});
 // the UGV
-const rv=new T.Group(),wheels=[],body=new T.MeshStandardMaterial({color:0x2c323c,roughness:.45,metalness:.6}),alu=new T.MeshStandardMaterial({color:0xb9bcc0,roughness:.4,metalness:.7}),ed=new T.LineBasicMaterial({color:0xff5a1f,transparent:true,opacity:.5});
+const rv=new T.Group(),wheels=[],body=new T.MeshStandardMaterial({color:0x2c323c,roughness:.45,metalness:.6}),alu=new T.MeshStandardMaterial({color:0xb9bcc0,roughness:.4,metalness:.7}),ed=new T.LineBasicMaterial({color:0xc4b5fd,transparent:true,opacity:.5});
 function part(par,geo,x,y,z,m,rz){const o=new T.Mesh(geo,m);o.position.set(x,y,z);if(rz)o.rotation.z=rz;par.add(o);const e=new T.LineSegments(new T.EdgesGeometry(geo,30),ed);e.position.copy(o.position);e.rotation.copy(o.rotation);par.add(e);return o}
 part(rv,new T.BoxGeometry(1.5,.42,2.5),0,.78,0,body);part(rv,new T.BoxGeometry(1.3,.08,2.1),0,1.03,0,alu);
 part(rv,new T.BoxGeometry(.8,.4,.7),0,1.28,-.3,body);part(rv,new T.CylinderGeometry(.04,.04,1.3,8),0,1.7,.7,alu);
 part(rv,new T.CylinderGeometry(.015,.015,1.1,6),.55,1.6,.9,alu);
 [[-.95,-.9],[.95,-.9],[-.95,.9],[.95,.9]].forEach(([x,z])=>{const w=new T.Group();w.position.set(x,.42,z);part(w,new T.CylinderGeometry(.42,.42,.3,22),0,0,0,body,Math.PI/2);rv.add(w);wheels.push(w)});
 const puck=new T.Group();puck.position.set(0,2.4,.7);part(puck,new T.CylinderGeometry(.22,.22,.18,20),0,0,0,alu);
-const bm=new T.Mesh(new T.BoxGeometry(.05,.05,.3),new T.MeshBasicMaterial({color:0xff5a1f}));bm.position.set(0,0,-.2);puck.add(bm);rv.add(puck);
-const hl=new T.MeshBasicMaterial({color:0xfff0c2});[-.45,.45].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(.3,.1,.05),hl);m.position.set(x,.8,-1.26);rv.add(m)});
-const lamp=new T.PointLight(0xff5a1f,1.6,14);lamp.position.set(0,1.5,-2.2);rv.add(lamp);sc.add(rv);
+const bm=new T.Mesh(new T.BoxGeometry(.05,.05,.3),new T.MeshBasicMaterial({color:0xa78bfa}));bm.position.set(0,0,-.2);puck.add(bm);rv.add(puck);
+const hl=new T.MeshBasicMaterial({color:0xe5f4ff});[-.45,.45].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(.3,.1,.05),hl);m.position.set(x,.8,-1.26);rv.add(m)});
+const lamp=new T.PointLight(0xa78bfa,1.2,14);lamp.position.set(0,1.5,-2.2);rv.add(lamp);sc.add(rv);
 // lidar range rings on the ground
-const rings=[0,.5].map(o=>{const m=new T.Mesh(new T.RingGeometry(.985,1,96),new T.MeshBasicMaterial({color:0xff5a1f,transparent:true,side:T.DoubleSide,depthWrite:false}));m.rotation.x=-Math.PI/2;m.userData.o=o;sc.add(m);return m});
-window.setWorldTheme=function(light){var c=light?0xe9edf3:0x06070a;rn.setClearColor(c);sc.fog.color.set(c);gm.color.set(light?0x7d8aa3:0xcfd8e8);gm.opacity=light?.6:.5;lm.color.set(light?0x6b7790:0x3a4558);if(still)rn.render(sc,cam)};
+const rings=[0,.5].map(o=>{const m=new T.Mesh(new T.RingGeometry(.985,1,96),new T.MeshBasicMaterial({color:0xa78bfa,transparent:true,side:T.DoubleSide,depthWrite:false}));m.rotation.x=-Math.PI/2;m.userData.o=o;sc.add(m);return m});
+window.setWorldTheme=function(light){var c=light?0xe9edf3:0x06070a,accent=light?0x6d4ac7:0xa78bfa;rn.setClearColor(c);sc.fog.color.set(c);gm.color.set(light?0x7d8aa3:0xcfd8e8);gm.opacity=light?.6:.5;lm.color.set(light?0x6b7790:0x3a4558);lo.setHex(light?0x7b6b9f:0x493c70);hi.setHex(accent);for(let i=0;i<blend.length;i++){terrainColor.copy(lo).lerp(hi,blend[i]);col[i*3]=terrainColor.r;col[i*3+1]=terrainColor.g;col[i*3+2]=terrainColor.b}pg.attributes.color.needsUpdate=true;cm.color.setHex(accent);cm.emissive.setHex(0x200e45);ed.color.setHex(light?0x6d4ac7:0xc4b5fd);bm.material.color.setHex(accent);lamp.color.setHex(accent);rings.forEach(r=>r.material.color.setHex(accent));if(still)rn.render(sc,cam)};
 window.setWorldTheme(document.documentElement.getAttribute('data-theme')==='light');
 // ---- INTRO: the UGV charges in, handbrake-drifts in front of the screen, then parks as the live background rover
 const INTRO=(function(){
