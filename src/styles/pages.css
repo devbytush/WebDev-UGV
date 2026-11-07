@@ -108,6 +108,22 @@ body::before{background:radial-gradient(60% 50% at 10% 6%,rgba(255,106,43,.16),t
 .blog-card .blog-copy{padding:22px}
 .contact-layout{max-width:1000px;margin-inline:auto}
 .contact-panel{padding:28px}
+.contact-form-panel{width:min(100%,1000px);margin:22px auto 0}
+.contact-form-heading{margin-bottom:22px}
+.contact-form-heading h3{margin:0 0 6px}
+.contact-form-heading p{margin:0;color:var(--t2);font-size:14px}
+.contact-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.contact-form label{display:grid;gap:8px;color:var(--t2);font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.contact-form input,.contact-form textarea{width:100%;min-width:0;padding:13px 15px;border:1px solid var(--b2);border-radius:12px;background:rgba(255,255,255,.06);color:var(--t1);font:400 14px/1.5 var(--sans);letter-spacing:normal;text-transform:none;transition:border-color .2s,box-shadow .2s}
+html[data-theme="light"] .contact-form input,html[data-theme="light"] .contact-form textarea{background:rgba(255,255,255,.92)}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:var(--t3);opacity:1}
+.contact-form input:focus,.contact-form textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 20%,transparent)}
+.contact-form textarea{min-height:140px;resize:vertical}
+.contact-form-wide{grid-column:1/-1}
+.contact-form-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.contact-form-actions .btn{width:auto}
+.contact-form-note{margin:0;color:var(--t3);font-size:12px}
+@media(max-width:600px){.contact-form{grid-template-columns:1fr;gap:14px}.contact-form-wide{grid-column:auto}.contact-form-panel{padding:22px}}
 .map-frame{height:320px}
 .rs-list{max-width:1100px;gap:24px}
 .rs-card{padding:22px 24px 24px}
